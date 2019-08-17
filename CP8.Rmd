@@ -15,8 +15,7 @@ In this project, the goal will be to use data from accelerometers on the belt, f
 
 # Getting And Cleaning Data
 
-```{r InputData, echo=FALSE }
-setwd("D:/Github/HAR_ML")
+```{r InputData}
 train_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
 test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
 train_local <- "pml-training.csv"
@@ -69,7 +68,7 @@ varImpPlot(mod_rf$finalModel,main="Predictors ordered by Importance")
 ```
 # Results
 
-The accuracy of our model is 0.9937 and our Out-of-Sample error is `r oof`
+The accuracy of our model is **0.9937** and our Out-of-Sample error is **`r oof`**. The most influencial predictors are **roll_belt**, **pitch_forearm** and **yaw_belt**
 
 # Generate the prediction for our test data, embed to the test file and export to a new file
 ```{r genTestPred}

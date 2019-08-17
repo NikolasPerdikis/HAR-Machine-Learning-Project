@@ -1,2 +1,2 @@
-# NPER_CP8
+# HAR Machine Learning Course Project
  

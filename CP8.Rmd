@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Summary
+# Summary
 
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
 
@@ -36,4 +36,47 @@ dftest <- dftest[,colSums(is.na(dftest))==0]
 dim(dftest)
 
 ```
+# Correlation and model choice
 
+```{r cor}
+cor<-sapply(colnames(dftrain[,-ncol(dftrain)]), function(x) cor(as.numeric(dftrain[,x]), as.numeric(dftrain[,"classe"])))
+hist(cor,main="Histogram of Correlation",xlab="Correlation")
+
+```
+
+We see the correlation lies below 0.5, therefore the predictors do not have any particular relation to the outcome (classe). We will be using Random Forests as our prefered model to fit the data
+
+# Model Fit and Prediction
+
+``` {r, caret eval=FALSE}
+library(caret)
+set.seed(555)
+inTrain = createDataPartition(dftrain$classe, p = 3/4)[[1]]
+training = dftrain[ inTrain,]
+testing = dftrain[-inTrain,]
+set.seed(62433)
+mod_rf <- train(classe ~ .,training, method = "rf")
+#Apply the model on the test data and calculate the confusion matrix 
+val_pred <- predict(mod_rf,testing)
+confusionMatrix(val_pred,testing$classe)
+
+#Calculate Out-of-Sample error
+oof <- 1-(sum(val_pred==testing$classe)/dim(testing)[1])
+oof
+library(randomForest)
+importance<-varImp(mod_rf)$importance
+varImpPlot(mod_rf$finalModel,main="Predictors ordered by Importance")
+```
+# Results
+
+The accuracy of our model is 0.9937 and our Out-of-Sample error is `r oof`
+
+# Generate the prediction for our test data, embed to the test file and export to a new file
+```{r genTestPred}
+
+library(dplyr)
+predict_test <- predict(mod_rf,dftest)
+all_test <- dftest %>% mutate(predRandomForests=predict_test)
+write.csv(all_test,"predRF.csv")
+
+```

@@ -9,22 +9,31 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Summary
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Getting And Cleaning Data
 
-```{r cars}
-summary(cars)
+```{r InputData, echo=FALSE }
+setwd("D:/Github/HAR_ML")
+train_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_url <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+train_local <- "pml-training.csv"
+test_local <- "pml-testing.csv"
+download.file(train_url,train_local,method="curl")
+download.file(test_url,test_local,method="curl")
+
+train_data <- read.csv(train_local,header= TRUE, sep=",",na.strings=c("NA",""))
+test_data <- read.csv(test_local,header=TRUE, sep=",",na.strings=c("NA",""))
+# Remove unwanted columns such as name and timestamp
+dftrain <- train_data[,-c(1:7)]
+dftest <- test_data[,-c(1:7)]
+# Remove missing or non numeric columns
+dftrain <- dftrain[,colSums(is.na(dftrain))==0]
+dim(dftrain)
+dftest <- dftest[,colSums(is.na(dftest))==0]
+dim(dftest)
+
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
